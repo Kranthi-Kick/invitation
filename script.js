@@ -71,8 +71,6 @@ form.addEventListener('submit', async (e) => {
     });
   if (hasError) return;
 
-  showPanel(loadingState);
-
   const email = form.email?.value.trim() || '';
   const attending = document.querySelector('input[name="attending"]:checked')?.value || 'yes';
   const dietaryRestrictions = form.dietary?.value.trim() || '';
@@ -95,7 +93,7 @@ form.addEventListener('submit', async (e) => {
         message
       })
     });
-    
+
     if (!response.ok) {
       const errorText = await response.text();
       console.error('Server error details:', errorText);
@@ -107,7 +105,6 @@ form.addEventListener('submit', async (e) => {
   } catch (err) {
     console.error('Submission error:', err);
     alert('Something went wrong submitting your RSVP. Check browser console for details: ' + err.message);
-    showPanel(formCont);
   }
 });
 
