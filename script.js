@@ -30,8 +30,8 @@ const formCont     = document.getElementById('form-container');
 const loadingState = document.getElementById('loading-state');
 const successState = document.getElementById('success-state');
 
-const SUPABASE_URL = 'https://0ec90b57d6e95fcbda19832f.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJib2x0IiwicmVmIjoiMGVjOTBiNTdkNmU5NWZjYmRhMTk4MzJmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg4ODE1NzQsImV4cCI6MTc1ODg4MTU3NH0.9I8-U0x86Ak8t2DGaIk0HfvTSLsAyzdnz-Nw00mMkKw';
+const SUPABASE_URL = 'https://uplgiqvxqjlyhouyekox.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVwbGdpcXZ4cWpseWhvdXlla294Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMyODEzNTQsImV4cCI6MjA4ODg1NzM1NH0.IINgeJiWnON0Yy-guCZwAcvQUNjyZJkEzg04D4mG2-o';
 const SCRIPT_URL = `${SUPABASE_URL}/functions/v1/submit-rsvp`;
 
 function showPanel(panel) {
