@@ -147,7 +147,7 @@
             <th>Name</th>
             <th>Phone</th>
             <th>Guests</th>
-            <th>Events</th>
+            <th>Attending</th>
             <th>Submitted At</th>
           </tr>
         </thead>
@@ -161,9 +161,16 @@
   </div>
 
   <script>
+    const SUPABASE_URL = 'https://0ec90b57d6e95fcbda19832f.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJib2x0IiwicmVmIjoiMGVjOTBiNTdkNmU5NWZjYmRhMTk4MzJmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg4ODE1NzQsImV4cCI6MTc1ODg4MTU3NH0.9I8-U0x86Ak8t2DGaIk0HfvTSLsAyzdnz-Nw00mMkKw';
+
     async function fetchData() {
       try {
-        const response = await fetch('http://localhost:3000/api/responses');
+        const response = await fetch(`${SUPABASE_URL}/functions/v1/get-rsvps`, {
+          headers: {
+            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+          }
+        });
         const data = await response.json();
         
         let totalGuests = 0;
@@ -177,27 +184,20 @@
         }
 
         tbody.innerHTML = '';
-        
-        // Sort newest first
-        data.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
 
         data.forEach(item => {
           totalGuests += parseInt(item.guests) || 0;
-          
-          const tr = document.createElement('tr');
-          
-          // Format events as badges
-          const eventsHtml = item.events 
-            ? item.events.split(', ').map(e => `<span class="badge">${e}</span>`).join('') 
-            : '<span class="text-muted">None</span>';
 
-          const date = new Date(item.timestamp).toLocaleString();
+          const tr = document.createElement('tr');
+
+          const attendingBadge = `<span class="badge">${item.attending || 'yes'}</span>`;
+          const date = new Date(item.created_at).toLocaleString();
 
           tr.innerHTML = `
             <td style="font-weight: 500;">${item.name}</td>
             <td>${item.phone}</td>
             <td>${item.guests}</td>
-            <td>${eventsHtml}</td>
+            <td>${attendingBadge}</td>
             <td style="color: #6b7280; font-size: 0.9rem;">${date}</td>
           `;
           tbody.appendChild(tr);

@@ -1,19 +1,12 @@
 {
   "name": "rsvp-page-custom",
   "version": "1.0.0",
-  "description": "",
-  "main": "script.js",
+  "description": "Wedding RSVP website with Supabase backend",
   "scripts": {
-    "build": "echo 'Build complete: No specific build steps required for this static site.'",
+    "build": "echo 'Build complete: Static site with Supabase Edge Functions.'",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
+  "keywords": ["wedding", "rsvp", "supabase"],
   "author": "",
-  "license": "ISC",
-  "type": "commonjs",
-  "dependencies": {
-    "body-parser": "^2.2.2",
-    "cors": "^2.8.6",
-    "express": "^5.2.1"
-  }
+  "license": "ISC"
 }

@@ -30,8 +30,9 @@ const formCont     = document.getElementById('form-container');
 const loadingState = document.getElementById('loading-state');
 const successState = document.getElementById('success-state');
 
-// Local Custom API endpoint
-const SCRIPT_URL = 'http://localhost:3000/api/rsvp';
+const SUPABASE_URL = 'https://0ec90b57d6e95fcbda19832f.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJib2x0IiwicmVmIjoiMGVjOTBiNTdkNmU5NWZjYmRhMTk4MzJmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg4ODE1NzQsImV4cCI6MTc1ODg4MTU3NH0.9I8-U0x86Ak8t2DGaIk0HfvTSLsAyzdnz-Nw00mMkKw';
+const SCRIPT_URL = `${SUPABASE_URL}/functions/v1/submit-rsvp`;
 
 function showPanel(panel) {
   [formCont, loadingState, successState].forEach(p => p.style.display = 'none');
@@ -72,17 +73,27 @@ form.addEventListener('submit', async (e) => {
 
   showPanel(loadingState);
 
-  const events = Array.from(
-    document.querySelectorAll('input[name="event_option"]:checked')
-  ).map(cb => cb.value).join(', ');
+  const email = form.email?.value.trim() || '';
+  const attending = document.querySelector('input[name="attending"]:checked')?.value || 'yes';
+  const dietaryRestrictions = form.dietary?.value.trim() || '';
+  const message = form.message?.value.trim() || '';
 
   try {
     const response = await fetch(SCRIPT_URL, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
       },
-      body: JSON.stringify({ name, phone, guests, events })
+      body: JSON.stringify({
+        name,
+        email,
+        phone,
+        attending,
+        guests,
+        dietaryRestrictions,
+        message
+      })
     });
     
     if (!response.ok) {
