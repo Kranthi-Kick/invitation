@@ -4,6 +4,7 @@
   "description": "",
   "main": "script.js",
   "scripts": {
+    "build": "echo 'Build complete: No specific build steps required for this static site.'",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
