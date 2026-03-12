@@ -104,8 +104,42 @@ form.addEventListener('submit', async (e) => {
    Banner Video Interaction
    ============================================================ */
 const bannerVideo = document.getElementById('bannerVideo');
-if (bannerVideo) {
-  // Allow toggling play/pause via click
+const unmuteHint  = document.getElementById('unmuteHint');
+const muteBtn     = document.getElementById('muteBtn');
+const muteIcon    = document.getElementById('muteIcon');
+const muteLbl     = document.getElementById('muteLbl');
+const enterOverlay = document.getElementById('enterOverlay');
+
+function updateMuteBtn() {
+  if (bannerVideo.muted) {
+    muteIcon.className = 'fas fa-volume-mute';
+    muteLbl.textContent = 'Unmute';
+  } else {
+    muteIcon.className = 'fas fa-volume-high';
+    muteLbl.textContent = 'Mute';
+  }
+}
+
+if (enterOverlay) {
+  enterOverlay.addEventListener('click', () => {
+    // Fade out overlay
+    enterOverlay.style.opacity = '0';
+    setTimeout(() => { enterOverlay.style.display = 'none'; }, 600);
+
+    // Play video WITH sound (user gesture just happened)
+    if (bannerVideo) {
+      bannerVideo.muted = false;
+      bannerVideo.play().catch(e => {
+        console.warn('Play failed:', e);
+        bannerVideo.muted = true; // fallback
+      });
+      updateMuteBtn();
+    }
+  });
+}
+
+if (bannerVideo && muteBtn) {
+  // Click video → toggle pause/play
   bannerVideo.addEventListener('click', () => {
     if (bannerVideo.paused) {
       bannerVideo.play();
@@ -114,17 +148,10 @@ if (bannerVideo) {
     }
   });
 
-  // Force autoplay immediately on load (try unmuted first, fallback to muted)
-  const attemptAutoplay = async () => {
-    try {
-      bannerVideo.muted = false; // Try loudly first
-      await bannerVideo.play();
-    } catch (error) {
-      console.warn('Unmuted autoplay blocked. Falling back to muted autoplay.', error);
-      bannerVideo.muted = true; // Browsers allow muted autoplay
-      await bannerVideo.play().catch(e => console.error("Total autoplay failure", e));
-    }
-  };
-
-  attemptAutoplay();
+  // Mute button toggles mute
+  muteBtn.addEventListener('click', (e) => {
+    e.stopPropagation(); // don't pause video
+    bannerVideo.muted = !bannerVideo.muted;
+    updateMuteBtn();
+  });
 }
