@@ -84,6 +84,19 @@ body {
 }
 .hero-ornament.bottom { margin: 24px auto 0; }
 
+.ganesh-icon-top {
+  margin-bottom: 20px;
+  opacity: 0;
+  animation: fadeUp 1s ease 0.1s forwards;
+}
+
+.ganesh-icon-top img {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 8px rgba(0, 35, 102, 0.15));
+}
+
 .hero-blessing {
   font-family: 'Cormorant Garamond', serif;
   font-size: 0.95rem;
