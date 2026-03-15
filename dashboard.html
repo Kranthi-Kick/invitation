@@ -141,6 +141,24 @@
       color: white;
       border-color: var(--primary);
     }
+    .download-btn {
+      background: #10b981;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: background 0.2s;
+      margin-left: 12px;
+    }
+    .download-btn:hover {
+      background: #059669;
+    }
+    .download-btn:disabled {
+      background: #d1d5db;
+      cursor: not-allowed;
+    }
   </style>
 </head>
 <body>
@@ -148,9 +166,14 @@
   <div class="container">
     <div class="header">
       <h1>RSVP Dashboard</h1>
-      <button class="refresh-btn" onclick="fetchData()">
-        <i class="fas fa-sync-alt" style="margin-right: 6px;"></i> Refresh
-      </button>
+      <div>
+        <button class="download-btn" onclick="downloadCSV()" id="download-btn">
+          <i class="fas fa-download" style="margin-right: 6px;"></i> Download CSV
+        </button>
+        <button class="refresh-btn" onclick="fetchData()">
+          <i class="fas fa-sync-alt" style="margin-right: 6px;"></i> Refresh
+        </button>
+      </div>
     </div>
 
     <div class="filter-tabs">
@@ -177,6 +200,7 @@
         <thead>
           <tr>
             <th>Name</th>
+            <th>Email</th>
             <th>Phone</th>
             <th>Guests</th>
             <th>Events</th>
@@ -185,7 +209,7 @@
         </thead>
         <tbody id="table-body">
           <tr>
-            <td colspan="5" class="empty-state">Loading responses...</td>
+            <td colspan="6" class="empty-state">Loading responses...</td>
           </tr>
         </tbody>
       </table>
@@ -211,7 +235,7 @@
       } catch (err) {
         console.error('Error fetching data:', err);
         document.getElementById('table-body').innerHTML = `
-          <tr><td colspan="5" class="empty-state" style="color: red;">
+          <tr><td colspan="6" class="empty-state" style="color: red;">
             Error loading data. Are you sure the server is running?
           </td></tr>
         `;
@@ -229,11 +253,14 @@
       }
 
       if (filteredData.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="5" class="empty-state">No RSVPs for this event yet.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="6" class="empty-state">No RSVPs for this event yet.</td></tr>`;
         document.getElementById('stat-responses').textContent = '0';
         document.getElementById('stat-guests').textContent = '0';
+        document.getElementById('download-btn').disabled = true;
         return;
       }
+
+      document.getElementById('download-btn').disabled = false;
 
       tbody.innerHTML = '';
       let totalGuests = 0;
@@ -250,6 +277,7 @@
 
         tr.innerHTML = `
           <td style="font-weight: 500;">${item.name}</td>
+          <td>${item.email || '<span style="color: #9ca3af;">-</span>'}</td>
           <td>${item.phone}</td>
           <td>${item.guests}</td>
           <td>${eventBadges || '<span style="color: #9ca3af;">None</span>'}</td>
@@ -270,6 +298,56 @@
         renderData();
       });
     });
+
+    function downloadCSV() {
+      let filteredData = allData;
+      if (currentFilter !== 'all') {
+        filteredData = allData.filter(item => {
+          return item.events && item.events.includes(currentFilter);
+        });
+      }
+
+      if (filteredData.length === 0) {
+        alert('No data to download');
+        return;
+      }
+
+      // CSV headers
+      const headers = ['Name', 'Email', 'Phone', 'Guests', 'Events', 'Submitted At'];
+      const csvRows = [headers.join(',')];
+
+      // CSV data rows
+      filteredData.forEach(item => {
+        const row = [
+          `"${item.name || ''}"`,
+          `"${item.email || ''}"`,
+          `"${item.phone || ''}"`,
+          item.guests || '0',
+          `"${(item.events || []).join(', ')}"`,
+          `"${new Date(item.created_at).toLocaleString()}"`
+        ];
+        csvRows.push(row.join(','));
+      });
+
+      // Create CSV content
+      const csvContent = csvRows.join('\n');
+
+      // Create download link
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      const url = URL.createObjectURL(blob);
+
+      const fileName = currentFilter === 'all'
+        ? 'all-rsvps.csv'
+        : `${currentFilter.toLowerCase().replace(/\s+/g, '-')}-rsvps.csv`;
+
+      link.setAttribute('href', url);
+      link.setAttribute('download', fileName);
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
 
     fetchData();
   </script>
