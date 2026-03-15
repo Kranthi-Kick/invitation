@@ -684,9 +684,9 @@ body {
   margin-bottom: 28px;
 }
 .enter-btn {
-  width: 56px;
-  height: 56px;
-  background: radial-gradient(circle at 35% 35%, #8B0000, #5C0000);
+  width: 64px;
+  height: 64px;
+  background: radial-gradient(circle at 30% 30%, #FFD700, #DAA520, #B8860B);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -694,34 +694,54 @@ body {
   margin: 0 auto;
   position: relative;
   box-shadow:
-    0 2px 8px rgba(139, 0, 0, 0.5),
-    inset 0 -2px 4px rgba(0, 0, 0, 0.3),
-    inset 0 2px 4px rgba(255, 255, 255, 0.15);
+    0 4px 12px rgba(218, 165, 32, 0.6),
+    0 2px 6px rgba(0, 0, 0, 0.3),
+    inset 0 -3px 6px rgba(139, 115, 85, 0.4),
+    inset 0 3px 6px rgba(255, 255, 255, 0.5);
   animation: pulse 2s ease-in-out infinite;
+  border: 2px solid #B8860B;
 }
 
 .enter-btn::before {
   content: '';
   position: absolute;
-  width: 38px;
-  height: 38px;
-  background: rgba(0, 0, 0, 0.25);
+  width: 50px;
+  height: 50px;
+  background: radial-gradient(circle at 35% 35%, rgba(255, 239, 213, 0.4), rgba(184, 134, 11, 0.3));
   border-radius: 50%;
-  border: 1.5px solid rgba(255, 215, 0, 0.4);
+  border: 2px solid rgba(139, 115, 85, 0.5);
+  box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.3);
 }
 
 .enter-btn::after {
   content: 'V & K';
   position: absolute;
   font-family: 'Pinyon Script', cursive;
-  font-size: 0.75rem;
-  color: rgba(255, 215, 0, 0.85);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #8B7355;
   letter-spacing: 0.05em;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+  text-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.5),
+    0 -1px 1px rgba(0, 0, 0, 0.3);
   z-index: 1;
 }
 
 @keyframes pulse {
-  0%, 100% { box-shadow: 0 2px 8px rgba(139,0,0,0.5), inset 0 -2px 4px rgba(0,0,0,0.3), inset 0 2px 4px rgba(255,255,255,0.15), 0 0 0 0 rgba(139,0,0,0.3); }
-  50%       { box-shadow: 0 2px 8px rgba(139,0,0,0.5), inset 0 -2px 4px rgba(0,0,0,0.3), inset 0 2px 4px rgba(255,255,255,0.15), 0 0 0 12px rgba(139,0,0,0); }
+  0%, 100% {
+    box-shadow:
+      0 4px 12px rgba(218,165,32,0.6),
+      0 2px 6px rgba(0,0,0,0.3),
+      inset 0 -3px 6px rgba(139,115,85,0.4),
+      inset 0 3px 6px rgba(255,255,255,0.5),
+      0 0 0 0 rgba(218,165,32,0.4);
+  }
+  50% {
+    box-shadow:
+      0 4px 12px rgba(218,165,32,0.6),
+      0 2px 6px rgba(0,0,0,0.3),
+      inset 0 -3px 6px rgba(139,115,85,0.4),
+      inset 0 3px 6px rgba(255,255,255,0.5),
+      0 0 0 16px rgba(218,165,32,0);
+  }
 }
