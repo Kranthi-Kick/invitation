@@ -700,6 +700,12 @@ body {
     inset 0 3px 6px rgba(255, 255, 255, 0.5);
   animation: pulse 2s ease-in-out infinite;
   border: 2px solid #B8860B;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.enter-btn:active {
+  transform: scale(0.85);
 }
 
 .enter-btn::before {

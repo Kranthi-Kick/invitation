@@ -134,9 +134,35 @@ function updateMuteBtn() {
 
 if (enterOverlay) {
   enterOverlay.addEventListener('click', () => {
-    // Fade out overlay
+    // Add seal press animation
+    const sealBtn = document.querySelector('.enter-btn');
+    if (sealBtn) {
+      sealBtn.style.transform = 'scale(0.85)';
+      setTimeout(() => {
+        sealBtn.style.transform = 'scale(1)';
+      }, 150);
+    }
+
+    // Elegant fade out with scale effect
+    enterOverlay.style.transition = 'opacity 0.8s ease, transform 0.8s ease';
     enterOverlay.style.opacity = '0';
-    setTimeout(() => { enterOverlay.style.display = 'none'; }, 600);
+    enterOverlay.style.transform = 'scale(1.1)';
+
+    setTimeout(() => {
+      enterOverlay.style.display = 'none';
+
+      // Animate page content in
+      const pageWrapper = document.querySelector('.page-wrapper');
+      if (pageWrapper) {
+        pageWrapper.style.opacity = '0';
+        pageWrapper.style.transform = 'translateY(30px)';
+        setTimeout(() => {
+          pageWrapper.style.transition = 'opacity 1s ease, transform 1s ease';
+          pageWrapper.style.opacity = '1';
+          pageWrapper.style.transform = 'translateY(0)';
+        }, 100);
+      }
+    }, 800);
 
     // Play video WITH sound (user gesture just happened)
     if (bannerVideo) {
