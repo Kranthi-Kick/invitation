@@ -649,6 +649,17 @@ body {
   text-align: center;
   animation: fadeUp 0.9s ease;
 }
+.ganesh-icon-overlay {
+  margin-bottom: 20px;
+  opacity: 0;
+  animation: fadeUp 1s ease 0.1s forwards;
+}
+.ganesh-icon-overlay img {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 8px rgba(0, 35, 102, 0.15));
+}
 .enter-blessing {
   font-family: 'Cormorant Garamond', serif;
   font-style: italic;
