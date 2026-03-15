@@ -143,25 +143,11 @@ if (enterOverlay) {
       }, 150);
     }
 
-    // Elegant fade out with scale effect
-    enterOverlay.style.transition = 'opacity 0.8s ease, transform 0.8s ease';
+    // Smooth fade out
     enterOverlay.style.opacity = '0';
-    enterOverlay.style.transform = 'scale(1.1)';
 
     setTimeout(() => {
       enterOverlay.style.display = 'none';
-
-      // Animate page content in
-      const pageWrapper = document.querySelector('.page-wrapper');
-      if (pageWrapper) {
-        pageWrapper.style.opacity = '0';
-        pageWrapper.style.transform = 'translateY(30px)';
-        setTimeout(() => {
-          pageWrapper.style.transition = 'opacity 1s ease, transform 1s ease';
-          pageWrapper.style.opacity = '1';
-          pageWrapper.style.transform = 'translateY(0)';
-        }, 100);
-      }
     }, 800);
 
     // Play video WITH sound (user gesture just happened)
