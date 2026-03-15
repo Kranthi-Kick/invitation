@@ -133,27 +133,21 @@ function updateMuteBtn() {
 }
 
 if (enterOverlay) {
-  const waxSeal = document.querySelector('.wax-seal');
+  enterOverlay.addEventListener('click', () => {
+    // Fade out overlay
+    enterOverlay.style.opacity = '0';
+    setTimeout(() => { enterOverlay.style.display = 'none'; }, 600);
 
-  if (waxSeal) {
-    waxSeal.addEventListener('click', (e) => {
-      e.stopPropagation();
-
-      // Fade out overlay
-      enterOverlay.style.opacity = '0';
-      setTimeout(() => { enterOverlay.style.display = 'none'; }, 600);
-
-      // Play video WITH sound (user gesture just happened)
-      if (bannerVideo) {
-        bannerVideo.muted = false;
-        bannerVideo.play().catch(e => {
-          console.warn('Play failed:', e);
-          bannerVideo.muted = true; // fallback
-        });
-        updateMuteBtn();
-      }
-    });
-  }
+    // Play video WITH sound (user gesture just happened)
+    if (bannerVideo) {
+      bannerVideo.muted = false;
+      bannerVideo.play().catch(e => {
+        console.warn('Play failed:', e);
+        bannerVideo.muted = true; // fallback
+      });
+      updateMuteBtn();
+    }
+  });
 }
 
 if (bannerVideo && muteBtn) {
