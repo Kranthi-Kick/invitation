@@ -21,7 +21,7 @@ Deno.serve(async (req: Request) => {
       Deno.env.get("SUPABASE_ANON_KEY") ?? ""
     );
 
-    const { name, email, phone, attending, guests, dietaryRestrictions, message } = await req.json();
+    const { name, email, phone, attending, guests, dietaryRestrictions, message, events } = await req.json();
 
     const { data, error } = await supabase
       .from("rsvp_responses")
@@ -33,6 +33,7 @@ Deno.serve(async (req: Request) => {
         guests: parseInt(guests) || 1,
         dietary_restrictions: dietaryRestrictions || "",
         message: message || "",
+        events: events || [],
       })
       .select()
       .maybeSingle();

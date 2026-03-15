@@ -76,6 +76,9 @@ form.addEventListener('submit', async (e) => {
   const dietaryRestrictions = form.dietary?.value.trim() || '';
   const message = form.message?.value.trim() || '';
 
+  const eventCheckboxes = document.querySelectorAll('input[name="event_option"]:checked');
+  const events = Array.from(eventCheckboxes).map(cb => cb.value);
+
   try {
     const response = await fetch(SCRIPT_URL, {
       method: 'POST',
@@ -90,7 +93,8 @@ form.addEventListener('submit', async (e) => {
         attending,
         guests,
         dietaryRestrictions,
-        message
+        message,
+        events
       })
     });
 

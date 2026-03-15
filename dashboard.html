@@ -117,6 +117,30 @@
     .refresh-btn:hover {
       background: #f3f4f6;
     }
+    .filter-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    .filter-tab {
+      padding: 8px 16px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: white;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.2s;
+      font-size: 0.9rem;
+    }
+    .filter-tab:hover {
+      background: #f3f4f6;
+    }
+    .filter-tab.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
   </style>
 </head>
 <body>
@@ -127,6 +151,14 @@
       <button class="refresh-btn" onclick="fetchData()">
         <i class="fas fa-sync-alt" style="margin-right: 6px;"></i> Refresh
       </button>
+    </div>
+
+    <div class="filter-tabs">
+      <button class="filter-tab active" data-event="all">All Events</button>
+      <button class="filter-tab" data-event="Mehandi Night">Mehndi Night</button>
+      <button class="filter-tab" data-event="Haldi">Haldi</button>
+      <button class="filter-tab" data-event="Wedding Ceremony">Wedding</button>
+      <button class="filter-tab" data-event="Reception">Reception</button>
     </div>
 
     <div class="stats">
@@ -147,7 +179,7 @@
             <th>Name</th>
             <th>Phone</th>
             <th>Guests</th>
-            <th>Attending</th>
+            <th>Events</th>
             <th>Submitted At</th>
           </tr>
         </thead>
@@ -161,8 +193,11 @@
   </div>
 
   <script>
-    const SUPABASE_URL = 'https://0ec90b57d6e95fcbda19832f.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJib2x0IiwicmVmIjoiMGVjOTBiNTdkNmU5NWZjYmRhMTk4MzJmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg4ODE1NzQsImV4cCI6MTc1ODg4MTU3NH0.9I8-U0x86Ak8t2DGaIk0HfvTSLsAyzdnz-Nw00mMkKw';
+    const SUPABASE_URL = 'https://uplgiqvxqjlyhouyekox.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVwbGdpcXZ4cWpseWhvdXlla294Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMyODEzNTQsImV4cCI6MjA4ODg1NzM1NH0.IINgeJiWnON0Yy-guCZwAcvQUNjyZJkEzg04D4mG2-o';
+
+    let allData = [];
+    let currentFilter = 'all';
 
     async function fetchData() {
       try {
@@ -171,41 +206,8 @@
             'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
           }
         });
-        const data = await response.json();
-        
-        let totalGuests = 0;
-        const tbody = document.getElementById('table-body');
-        
-        if (data.length === 0) {
-          tbody.innerHTML = `<tr><td colspan="5" class="empty-state">No RSVPs yet. Check back later!</td></tr>`;
-          document.getElementById('stat-responses').textContent = '0';
-          document.getElementById('stat-guests').textContent = '0';
-          return;
-        }
-
-        tbody.innerHTML = '';
-
-        data.forEach(item => {
-          totalGuests += parseInt(item.guests) || 0;
-
-          const tr = document.createElement('tr');
-
-          const attendingBadge = `<span class="badge">${item.attending || 'yes'}</span>`;
-          const date = new Date(item.created_at).toLocaleString();
-
-          tr.innerHTML = `
-            <td style="font-weight: 500;">${item.name}</td>
-            <td>${item.phone}</td>
-            <td>${item.guests}</td>
-            <td>${attendingBadge}</td>
-            <td style="color: #6b7280; font-size: 0.9rem;">${date}</td>
-          `;
-          tbody.appendChild(tr);
-        });
-
-        document.getElementById('stat-responses').textContent = data.length;
-        document.getElementById('stat-guests').textContent = totalGuests;
-
+        allData = await response.json();
+        renderData();
       } catch (err) {
         console.error('Error fetching data:', err);
         document.getElementById('table-body').innerHTML = `
@@ -216,7 +218,59 @@
       }
     }
 
-    // Load data on start
+    function renderData() {
+      const tbody = document.getElementById('table-body');
+
+      let filteredData = allData;
+      if (currentFilter !== 'all') {
+        filteredData = allData.filter(item => {
+          return item.events && item.events.includes(currentFilter);
+        });
+      }
+
+      if (filteredData.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" class="empty-state">No RSVPs for this event yet.</td></tr>`;
+        document.getElementById('stat-responses').textContent = '0';
+        document.getElementById('stat-guests').textContent = '0';
+        return;
+      }
+
+      tbody.innerHTML = '';
+      let totalGuests = 0;
+
+      filteredData.forEach(item => {
+        totalGuests += parseInt(item.guests) || 0;
+
+        const tr = document.createElement('tr');
+        const date = new Date(item.created_at).toLocaleString();
+
+        const eventBadges = (item.events || []).map(event =>
+          `<span class="badge">${event}</span>`
+        ).join('');
+
+        tr.innerHTML = `
+          <td style="font-weight: 500;">${item.name}</td>
+          <td>${item.phone}</td>
+          <td>${item.guests}</td>
+          <td>${eventBadges || '<span style="color: #9ca3af;">None</span>'}</td>
+          <td style="color: #6b7280; font-size: 0.9rem;">${date}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      document.getElementById('stat-responses').textContent = filteredData.length;
+      document.getElementById('stat-guests').textContent = totalGuests;
+    }
+
+    document.querySelectorAll('.filter-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        currentFilter = tab.getAttribute('data-event');
+        renderData();
+      });
+    });
+
     fetchData();
   </script>
 </body>
