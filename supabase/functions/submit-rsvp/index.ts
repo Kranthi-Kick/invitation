@@ -21,22 +21,58 @@ Deno.serve(async (req: Request) => {
       Deno.env.get("SUPABASE_ANON_KEY") ?? ""
     );
 
-    const { name, email, phone, attending, guests, dietaryRestrictions, message, events } = await req.json();
+    const { name, email, phone, attending, guests, dietaryRestrictions, message, events, country } = await req.json();
 
-    const { data, error } = await supabase
+    // Check if phone number already exists
+    const { data: existingRecord } = await supabase
       .from("rsvp_responses")
-      .insert({
-        name,
-        email,
-        phone,
-        attending,
-        guests: parseInt(guests) || 1,
-        dietary_restrictions: dietaryRestrictions || "",
-        message: message || "",
-        events: events || [],
-      })
-      .select()
+      .select("id")
+      .eq("phone", phone)
       .maybeSingle();
+
+    let data, error;
+
+    if (existingRecord) {
+      // Update existing record
+      const result = await supabase
+        .from("rsvp_responses")
+        .update({
+          name,
+          email,
+          attending,
+          guests: parseInt(guests) || 1,
+          dietary_restrictions: dietaryRestrictions || "",
+          message: message || "",
+          events: events || [],
+          country: country || "",
+        })
+        .eq("id", existingRecord.id)
+        .select()
+        .maybeSingle();
+
+      data = result.data;
+      error = result.error;
+    } else {
+      // Insert new record
+      const result = await supabase
+        .from("rsvp_responses")
+        .insert({
+          name,
+          email,
+          phone,
+          attending,
+          guests: parseInt(guests) || 1,
+          dietary_restrictions: dietaryRestrictions || "",
+          message: message || "",
+          events: events || [],
+          country: country || "",
+        })
+        .select()
+        .maybeSingle();
+
+      data = result.data;
+      error = result.error;
+    }
 
     if (error) {
       return new Response(

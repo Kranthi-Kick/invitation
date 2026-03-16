@@ -78,6 +78,20 @@ form.addEventListener('submit', async (e) => {
   const eventCheckboxes = document.querySelectorAll('input[name="event_option"]:checked');
   const events = Array.from(eventCheckboxes).map(cb => cb.value);
 
+  // Get country from geolocation
+  let country = '';
+  try {
+    const geoResponse = await fetch('https://ipapi.co/json/');
+    if (geoResponse.ok) {
+      const geoData = await geoResponse.json();
+      country = geoData.country_name || '';
+    }
+  } catch (geoError) {
+    console.warn('Could not fetch geolocation:', geoError);
+  }
+
+  showPanel(loadingState);
+
   try {
     const response = await fetch(SCRIPT_URL, {
       method: 'POST',
@@ -93,7 +107,8 @@ form.addEventListener('submit', async (e) => {
         guests,
         dietaryRestrictions,
         message,
-        events
+        events,
+        country
       })
     });
 
