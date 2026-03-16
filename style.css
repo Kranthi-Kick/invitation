@@ -347,8 +347,16 @@ body {
   font-size: 0.95rem;
   font-weight: 500;
   color: var(--charcoal);
-  margin-bottom: 16px;
+  margin-bottom: 8px;
   letter-spacing: 0.02em;
+}
+
+.event-dress {
+  font-size: 0.85rem;
+  color: var(--muted);
+  font-style: italic;
+  margin-bottom: 16px;
+  line-height: 1.4;
 }
 
 .event-directions {

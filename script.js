@@ -56,12 +56,13 @@ form.addEventListener('submit', async (e) => {
   e.preventDefault();
 
   const name   = form.name.value.trim();
+  const email  = form.email.value.trim();
   const phone  = form.phone.value.trim();
   const guests = form.guests.value.trim();
 
   // Shake empty required fields
   let hasError = false;
-  [{ el: form.name, val: name }, { el: form.phone, val: phone }, { el: form.guests, val: guests }]
+  [{ el: form.name, val: name }, { el: form.email, val: email }, { el: form.phone, val: phone }, { el: form.guests, val: guests }]
     .forEach(({ el, val }) => {
       if (!val) {
         el.style.animation = 'shake 0.4s ease';
@@ -70,8 +71,6 @@ form.addEventListener('submit', async (e) => {
       }
     });
   if (hasError) return;
-
-  const email = form.email?.value.trim() || '';
   const attending = document.querySelector('input[name="attending"]:checked')?.value || 'yes';
   const dietaryRestrictions = form.dietary?.value.trim() || '';
   const message = form.message?.value.trim() || '';
