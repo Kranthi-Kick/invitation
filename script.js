@@ -78,6 +78,12 @@ form.addEventListener('submit', async (e) => {
   const eventCheckboxes = document.querySelectorAll('input[name="event_option"]:checked');
   const events = Array.from(eventCheckboxes).map(cb => cb.value);
 
+  // Validate at least one event is selected
+  if (events.length === 0) {
+    alert('Please select at least one event you will attend.');
+    return;
+  }
+
   // Get country from geolocation
   let country = '';
   try {

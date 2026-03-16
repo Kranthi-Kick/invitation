@@ -202,6 +202,7 @@
             <th>Name</th>
             <th>Email</th>
             <th>Phone</th>
+            <th>Country</th>
             <th>Guests</th>
             <th>Events</th>
             <th>Submitted At</th>
@@ -209,7 +210,7 @@
         </thead>
         <tbody id="table-body">
           <tr>
-            <td colspan="6" class="empty-state">Loading responses...</td>
+            <td colspan="7" class="empty-state">Loading responses...</td>
           </tr>
         </tbody>
       </table>
@@ -235,7 +236,7 @@
       } catch (err) {
         console.error('Error fetching data:', err);
         document.getElementById('table-body').innerHTML = `
-          <tr><td colspan="6" class="empty-state" style="color: red;">
+          <tr><td colspan="7" class="empty-state" style="color: red;">
             Error loading data. Are you sure the server is running?
           </td></tr>
         `;
@@ -253,7 +254,7 @@
       }
 
       if (filteredData.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="6" class="empty-state">No RSVPs for this event yet.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="7" class="empty-state">No RSVPs for this event yet.</td></tr>`;
         document.getElementById('stat-responses').textContent = '0';
         document.getElementById('stat-guests').textContent = '0';
         document.getElementById('download-btn').disabled = true;
@@ -279,6 +280,7 @@
           <td style="font-weight: 500;">${item.name}</td>
           <td>${item.email || '<span style="color: #9ca3af;">-</span>'}</td>
           <td>${item.phone}</td>
+          <td>${item.country || '<span style="color: #9ca3af;">-</span>'}</td>
           <td>${item.guests}</td>
           <td>${eventBadges || '<span style="color: #9ca3af;">None</span>'}</td>
           <td style="color: #6b7280; font-size: 0.9rem;">${date}</td>
@@ -313,7 +315,7 @@
       }
 
       // CSV headers
-      const headers = ['Name', 'Email', 'Phone', 'Guests', 'Events', 'Submitted At'];
+      const headers = ['Name', 'Email', 'Phone', 'Country', 'Guests', 'Events', 'Submitted At'];
       const csvRows = [headers.join(',')];
 
       // CSV data rows
@@ -322,6 +324,7 @@
           `"${item.name || ''}"`,
           `"${item.email || ''}"`,
           `"${item.phone || ''}"`,
+          `"${item.country || ''}"`,
           item.guests || '0',
           `"${(item.events || []).join(', ')}"`,
           `"${new Date(item.created_at).toLocaleString()}"`
