@@ -90,8 +90,6 @@ form.addEventListener('submit', async (e) => {
     console.warn('Could not fetch geolocation:', geoError);
   }
 
-  showPanel(loadingState);
-
   try {
     const response = await fetch(SCRIPT_URL, {
       method: 'POST',
