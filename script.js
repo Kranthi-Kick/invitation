@@ -27,7 +27,6 @@
    ============================================================ */
 const form         = document.getElementById('weddingForm');
 const formCont     = document.getElementById('form-container');
-const loadingState = document.getElementById('loading-state');
 const successState = document.getElementById('success-state');
 
 const SUPABASE_URL = 'https://uplgiqvxqjlyhouyekox.supabase.co';
@@ -35,8 +34,10 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 const SCRIPT_URL = `${SUPABASE_URL}/functions/v1/submit-rsvp`;
 
 function showPanel(panel) {
-  [formCont, loadingState, successState].forEach(p => p.style.display = 'none');
-  panel.style.display = 'flex';
+  [formCont, successState].forEach(p => {
+    if (p) p.style.display = 'none';
+  });
+  if (panel) panel.style.display = 'flex';
 }
 
 /* Inject shake keyframe */
