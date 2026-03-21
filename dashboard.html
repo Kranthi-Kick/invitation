@@ -65,17 +65,19 @@
       background: var(--card-bg);
       border: 1px solid var(--border);
       border-radius: 12px;
-      overflow: hidden;
+      overflow-x: auto;
       box-shadow: 0 1px 3px rgba(0,0,0,0.05);
     }
     table {
       width: 100%;
+      min-width: 800px;
       border-collapse: collapse;
       text-align: left;
     }
     th, td {
       padding: 16px 20px;
       border-bottom: 1px solid var(--border);
+      white-space: nowrap;
     }
     th {
       background: #f3f4f6;
@@ -84,6 +86,28 @@
       text-transform: uppercase;
       letter-spacing: 0.05em;
       font-weight: 600;
+      cursor: pointer;
+      user-select: none;
+      position: relative;
+    }
+    th:hover {
+      background: #e5e7eb;
+    }
+    th.sortable::after {
+      content: '\f0dc';
+      font-family: 'Font Awesome 6 Free';
+      font-weight: 900;
+      margin-left: 8px;
+      opacity: 0.3;
+      font-size: 0.7rem;
+    }
+    th.sort-asc::after {
+      content: '\f0de';
+      opacity: 1;
+    }
+    th.sort-desc::after {
+      content: '\f0dd';
+      opacity: 1;
     }
     tr:last-child td {
       border-bottom: none;
@@ -199,13 +223,13 @@
       <table id="responses-table">
         <thead>
           <tr>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Phone</th>
-            <th>Country</th>
-            <th>Guests</th>
+            <th class="sortable" data-column="name">Name</th>
+            <th class="sortable" data-column="email">Email</th>
+            <th class="sortable" data-column="phone">Phone</th>
+            <th class="sortable" data-column="country">Country</th>
+            <th class="sortable" data-column="guests">Guests</th>
             <th>Events</th>
-            <th>Submitted At</th>
+            <th class="sortable" data-column="created_at">Submitted At</th>
           </tr>
         </thead>
         <tbody id="table-body">
@@ -223,6 +247,8 @@
 
     let allData = [];
     let currentFilter = 'all';
+    let sortColumn = 'created_at';
+    let sortDirection = 'desc';
 
     async function fetchData() {
       try {
@@ -231,7 +257,19 @@
             'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
           }
         });
-        allData = await response.json();
+        const rawData = await response.json();
+
+        // Remove duplicates based on email+phone combination
+        const uniqueMap = new Map();
+        rawData.forEach(item => {
+          const key = `${item.email || ''}_${item.phone || ''}`;
+          // Keep the most recent submission
+          if (!uniqueMap.has(key) || new Date(item.created_at) > new Date(uniqueMap.get(key).created_at)) {
+            uniqueMap.set(key, item);
+          }
+        });
+
+        allData = Array.from(uniqueMap.values());
         renderData();
       } catch (err) {
         console.error('Error fetching data:', err);
@@ -243,6 +281,38 @@
       }
     }
 
+    function sortData(data) {
+      return [...data].sort((a, b) => {
+        let valA = a[sortColumn];
+        let valB = b[sortColumn];
+
+        // Handle null/undefined values
+        if (!valA && !valB) return 0;
+        if (!valA) return 1;
+        if (!valB) return -1;
+
+        // Numeric sorting for guests
+        if (sortColumn === 'guests') {
+          valA = parseInt(valA) || 0;
+          valB = parseInt(valB) || 0;
+        }
+        // Date sorting
+        else if (sortColumn === 'created_at') {
+          valA = new Date(valA).getTime();
+          valB = new Date(valB).getTime();
+        }
+        // String sorting (case insensitive)
+        else {
+          valA = String(valA).toLowerCase();
+          valB = String(valB).toLowerCase();
+        }
+
+        if (valA < valB) return sortDirection === 'asc' ? -1 : 1;
+        if (valA > valB) return sortDirection === 'asc' ? 1 : -1;
+        return 0;
+      });
+    }
+
     function renderData() {
       const tbody = document.getElementById('table-body');
 
@@ -252,6 +322,17 @@
           return item.events && item.events.includes(currentFilter);
         });
       }
+
+      // Apply sorting
+      filteredData = sortData(filteredData);
+
+      // Update sort indicators
+      document.querySelectorAll('th.sortable').forEach(th => {
+        th.classList.remove('sort-asc', 'sort-desc');
+        if (th.dataset.column === sortColumn) {
+          th.classList.add(`sort-${sortDirection}`);
+        }
+      });
 
       if (filteredData.length === 0) {
         tbody.innerHTML = `<tr><td colspan="7" class="empty-state">No RSVPs for this event yet.</td></tr>`;
@@ -291,6 +372,20 @@
       document.getElementById('stat-responses').textContent = filteredData.length;
       document.getElementById('stat-guests').textContent = totalGuests;
     }
+
+    // Sort column click handlers
+    document.querySelectorAll('th.sortable').forEach(th => {
+      th.addEventListener('click', () => {
+        const column = th.dataset.column;
+        if (sortColumn === column) {
+          sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
+        } else {
+          sortColumn = column;
+          sortDirection = 'asc';
+        }
+        renderData();
+      });
+    });
 
     document.querySelectorAll('.filter-tab').forEach(tab => {
       tab.addEventListener('click', () => {
